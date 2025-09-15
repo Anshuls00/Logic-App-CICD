@@ -1,0 +1,31 @@
+name: Deploy Logic App to UAT
+
+on:
+  workflow_dispatch:   
+  push:
+    branches:
+      - main           
+
+jobs:
+  deploy-uat:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy Logic App to UAT
+        uses: azure/arm-deploy@v1
+        with:
+          scope: resourcegroup
+          resourceGroupName: "AnshulSinha-rg"
+          template: ./template.json
+          parameters: ./parameters-uat.json
+          deploymentName: logicapp-uat-deployment
